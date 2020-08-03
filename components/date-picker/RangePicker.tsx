@@ -163,7 +163,11 @@ class RangePicker extends React.Component<RangePickerProps, RangePickerState> {
       }));
     }
     if (value[0] && value[1] && value[0].diff(value[1]) > 0) {
-      value[1] = undefined;
+      if (value[0].isSame(value[1], 'days')) {
+        value[0] = value[1].clone();
+      } else {
+        value[1] = undefined;
+      }
     }
     const [start, end] = value;
     if (typeof props.onChange === 'function') {
