@@ -7,6 +7,7 @@ import DirectoryTree from './DirectoryTree';
 import { ConfigContext } from '../config-provider';
 import collapseMotion from '../_util/motion';
 import renderSwitcherIcon from './utils/iconUtil';
+import createDropIndicatorRender from './utils/dropIndicator';
 
 export interface AntdTreeNodeAttribute {
   eventKey: string;
@@ -133,6 +134,11 @@ export interface TreeProps extends Omit<RcTreeProps, 'prefixCls' | 'showLine'> {
   prefixCls?: string;
   children?: React.ReactNode;
   blockNode?: boolean;
+  dropIndicatorRender?: (
+    dropPosition: -1 | 0 | 1,
+    dropLevelOffset: number,
+    indent: number,
+  ) => React.ReactNode;
 }
 
 interface CompoundedComponent
@@ -152,12 +158,17 @@ const Tree = React.forwardRef<RcTree, TreeProps>((props, ref) => {
     blockNode,
     children,
     checkable,
+    draggable,
   } = props;
+  const prefixCls = getPrefixCls('tree', customizePrefixCls);
+  const dropIndicatorRender = React.useMemo(() => {
+    return draggable ? createDropIndicatorRender(prefixCls) : undefined;
+  }, [prefixCls, draggable]);
   const newProps = {
     ...props,
     showLine: Boolean(showLine),
+    dropIndicatorRender: props.dropIndicatorRender || dropIndicatorRender,
   };
-  const prefixCls = getPrefixCls('tree', customizePrefixCls);
   return (
     <RcTree
       itemHeight={20}
